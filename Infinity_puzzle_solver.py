@@ -10,10 +10,25 @@ import numpy as np
 import locale
 import sys
 
-toolbar_width = 40
-
 locale.setlocale(locale.LC_ALL, 'en_US')
+## Debug smaller puzzle set
+Debug_puzzle = False
 
+
+# Set up arrangement of 5x3 matrix
+# SAME tiles cannot be next to each other. The 7 can only fit into three arrangewmnts:
+# the matrix locations [2, 4] [6, 8, 10] [12, 14]
+# the matrix locations [1, 3, 5] [7, 9] [13 15]
+# the matrix locations [3, 5] [7, 9] [11, 13, 15]
+matrix = np.array([[['mixed','same','mixed','same','mixed'],\
+    ['same','mixed','same','mixed','same'],\
+    ['mixed','same','mixed','same','mixed']],\
+    [['same','mixed','same','mixed','same'],\
+    ['mixed','same','mixed','same','mixed'],\
+    ['mixed','mixed','same','mixed','same']],\
+    [['mixed','mixed','same','mixed','same'],\
+    ['mixed','same','mixed','same','mixed'],\
+    ['same','mixed','same','mixed','same']]])
 # Set up the SAME tiles, that is, rotation is ineffective
 
 tiles_same = np.array([['black','black','black','black'],\
@@ -34,31 +49,6 @@ tiles_mixed = np.array([['pink','blue','black','purple'],\
     ['yellow','black','orange','green'],\
     ['yellow','orange','pink','purple']])
 
-print('Same tiles \n', tiles_same)
-print(' ')
-
-print('Mixed tiles \n', tiles_mixed)
-print(' ')
-
-# Set up arrangement of 5x3 matrix
-# SAME tiles cannot be next to each other. The 7 can only fit into three arrangewmnts:
-# the matrix locations [2, 4] [6, 8, 10] [12, 14]
-# the matrix locations [1, 3, 5] [7, 9] [13 15]
-# the matrix locations [3, 5] [7, 9] [11, 13, 15]
-matrix = np.array([[['mixed','same','mixed','same','mixed'],\
-    ['same','mixed','same','mixed','same'],\
-    ['mixed','same','mixed','same','mixed']],\
-    [['same','mixed','same','mixed','same'],\
-    ['mixed','same','mixed','same','mixed'],\
-    ['mixed','mixed','same','mixed','same']],\
-    [['mixed','mixed','same','mixed','same'],\
-    ['mixed','same','mixed','same','mixed'],\
-    ['same','mixed','same','mixed','same']]])
-
-print('Matrix: \n', matrix)
-print(' ')
-
-
 # Design comparitor 
 # each location in the matrix has specific comparisons to the neighbouring tiles, i.e. the first location only compares right and down.
 # if the comparitor cell has U R D or L it will compare Up, Right, Down and Left - in that order
@@ -66,15 +56,61 @@ comparitor = np.array([['R D','R D L','R D L','R D L','D L'],\
     ['U R D','U R D L','U R D L','U R D L','U D L'],\
     ['U R','U R L','U R L','U R L','U L']])
 
+
+if(Debug_puzzle==True):
+    matrix = np.array([\
+    [['same','mixed','same'],\
+    ['mixed','same','mixed'],\
+    ['same','mixed','same']]\
+    ])
+
+    # Set up the SAME tiles, that is, rotation is ineffective
+
+    tiles_same = np.array([['black','black','black','black'],\
+    ['black','black','black','black'],\
+    ['black','black','black','black'],\
+    ['black','black','black','black'],\
+    ['black','black','black','black']])
+
+    # Set up mixed tiles
+    tiles_mixed = np.array([['black','black','black','black'],\
+    ['black','black','black','black'],\
+    ['black','black','black','black'],\
+    ['black','black','black','black']])
+
+    # Design comparitor 
+    # each location in the matrix has specific comparisons to the neighbouring tiles, i.e. the first location only compares right and down.
+    # if the comparitor cell has U R D or L it will compare Up, Right, Down and Left - in that order
+    comparitor = np.array([['R D','R D L','D L'],\
+    ['U R D','U R D L','U D L'],\
+    ['U R','U R L','U L']])
+
+
+
+print('Matrix: \n', matrix)
+print(' ')
+
+print('Same tiles \n', tiles_same)
+print(' ')
+
+print('Mixed tiles \n', tiles_mixed)
+print(' ')
+
 print('Comparitor: \n', comparitor)
 print(' ')
 
-# set up array for SAME tile orders. 7!
-tiles_same_order = list(iter.permutations((1,2,3,4,5,6,7), 7))
-print('SAME orders: ' + str(len(tiles_same_order)))
 
-# set up array for MIXED tile orders. 8!
+
+# set up array for SAME tile orders 7! & MIXED tile order 8!
+tiles_same_order = list(iter.permutations((1,2,3,4,5,6,7), 7))
 tiles_mixed_order = list(iter.permutations((1,2,3,4,5,6,7,8), 8))
+
+## set up ordered list with smaller debug puzzle set. OVERRIDE
+if(Debug_puzzle==True):
+    tiles_same_order = list(iter.permutations((1,2,3,4,5), 5))
+    tiles_mixed_order = list(iter.permutations((1,2,3,4), 4))
+
+print('SAME orders: ' + str(len(tiles_same_order)))
 print('MIXED orders: ' + str(len(tiles_mixed_order)))
 
 print(' ')
@@ -85,6 +121,9 @@ def tile_comparitor (first_tile, second_tile, direction):
     # first and second tiles are passed as full lists.
     # only a single comparison made on the appropriately facing edges of the tile,
     # based on the direction.
+
+    # DEBUG line
+    ###print(first_tile,'-', second_tile, ' ', direction)
 
     if direction == 'U':
         compare_result = first_tile[0] == second_tile[2]
@@ -123,11 +162,6 @@ working_config= []
 config_total = len(matrix)*len(tiles_same_order)*len(tiles_mixed_order)
 seconds_remaining = 0
 
-# setup toolbar
-sys.stdout.write("[%s]" % (" " * toolbar_width))
-sys.stdout.flush()
-sys.stdout.write("\b" * (toolbar_width+1)) # return to start of line, after '['
-
 
 for z in range(0,len(matrix)):
     for y in range(0,len(tiles_same_order)):
@@ -136,14 +170,21 @@ for z in range(0,len(matrix)):
             
             seconds_remaining = 100*config_counter/config_total
             print(locale.format("%f", seconds_remaining, grouping=True), '% |', int(time.time() - time_log), ' seconds -', end=' ')
+
+            if(Debug_puzzle==True):
+                print(' ')
             
             # populate the specific configuration for this matrix, sames_order and mixed_order
             config_populate= [[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]]
+
+            if(Debug_puzzle==True):
+                config_populate= [[0,0,0],[0,0,0],[0,0,0]]
+
             tiles_same_counter = 0
             tiles_mixed_counter = 0
-            for i in range(3):
+            for i in range(0,len(matrix[z])):
 
-                for j in range(5):
+                for j in range(0,len(matrix[z][0])):
 
                     if(matrix[z][i][j]=='same'):
                         config_populate[i][j] = tiles_same[(tiles_same_order[(y)][tiles_same_counter])-1]
@@ -152,6 +193,7 @@ for z in range(0,len(matrix)):
                     else:
                         config_populate[i][j] = tiles_mixed[(tiles_mixed_order[(x)][tiles_mixed_counter])-1]
                         tiles_mixed_counter += 1
+
             # finished populating the configuration
 
             # test the config based on the comparitor requirements.
@@ -166,8 +208,8 @@ for z in range(0,len(matrix)):
             # reset the config test results.
             config_test_result = []
 
-            for i in range(0,3): # interate through i dimension of tile config (0-4)
-                for j in range(0,5): # interate through j dimension of tile config (0-2)
+            for i in range(0,len(matrix[z])): # interate through i dimension of tile config (0-4)
+                for j in range(0,len(matrix[z][0])): # interate through j dimension of tile config (0-2)
 
                     tile_spin_test_result = []
 
@@ -179,9 +221,10 @@ for z in range(0,len(matrix)):
                             #print(tests, end=' ')
                             
                             tile_test_result = [] # reset the tile_test_result - gives a string of results. All true means it's a valid tile placement and rotation.
-                            #print(config_populate[i][j])
+                            ###print(config_populate[i][j])
 
                             for k in range(0,len(tests)): # loop through tile tests
+                                ### print(i, j, config_populate)
                                 
                                 if(tests[k]=='U'):
                                     tile_test_result.append(tile_comparitor(config_populate[i][j],config_populate[i-1][j],'U'))
@@ -204,8 +247,6 @@ for z in range(0,len(matrix)):
                             # search for a False in the tile_test_result. No falses means the tile_rotation meets all tests
                             # need to error handle as index without a result throws a valueError.
                             
-                            #print(tile_test_result)
-
                             # rotate the tile
                             config_populate[i][j] = tile_rotator(config_populate[i][j])
 
@@ -242,4 +283,5 @@ for z in range(0,len(matrix)):
             config_counter += 1
             print(' ')
 
-
+for d in range(0,len(working_config)):
+    print(working_config[d])
