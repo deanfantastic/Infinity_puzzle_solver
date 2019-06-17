@@ -48,7 +48,7 @@ tiles_mixed = np.array([['pink','blue','black','purple'],\
     ['yellow','black','orange','green'],\
     ['yellow','orange','pink','purple']])
 
-# Design comparitor 
+# Design comparitor
 # each location in the matrix has specific comparisons to the neighbouring tiles, i.e. the first location only compares right and down.
 # if the comparitor cell has U R D or L it will compare Up, Right, Down and Left - in that order
 comparitor = np.array([['R D','R D L','R D L','R D L','D L'],\
@@ -77,7 +77,7 @@ if(Debug_puzzle==True):
     ['black','black','black','black'],\
     ['black','black','black','black']])
 
-    # Design comparitor 
+    # Design comparitor
     # each location in the matrix has specific comparisons to the neighbouring tiles, i.e. the first location only compares right and down.
     # if the comparitor cell has U R D or L it will compare Up, Right, Down and Left - in that order
     comparitor = np.array([['R D','R D L','D L'],\
@@ -126,16 +126,16 @@ def tile_comparitor (first_tile, second_tile, direction):
 
     if direction == 'U':
         compare_result = first_tile[0] == second_tile[2]
-    
+
     elif direction == 'R':
         compare_result = first_tile[1] == second_tile[3]
-    
+
     elif direction == 'D':
         compare_result = first_tile[2] == second_tile[0]
-    
+
     elif direction == 'L':
         compare_result = first_tile[3] == second_tile[1]
-    
+
     else:
         compare_result = 'tile_comparitor function ERROR'
 
@@ -177,7 +177,7 @@ for z in range(0,len(matrix)):
 
             if(Debug_puzzle==True):
                 print(' ')
-            
+
             # populate the specific configuration for this matrix, sames_order and mixed_order
             config_populate= [[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]]
 
@@ -220,28 +220,28 @@ for z in range(0,len(matrix)):
                     if(tiles_rotatable[i][j]=='mixed'): # perform tile tests only on tils marked as mixed
 
                         for l in range(0,4): # loop over tile rotations
-                
+
                             tests = str.split(comparitor[i][j]) # grad the valid comparisons for each tile in the config. # split into array of single tests
                             #print(tests, end=' ')
-                            
+
                             tile_test_result = [] # reset the tile_test_result - gives a string of results. All true means it's a valid tile placement and rotation.
                             ###print(config_populate[i][j])
 
                             for k in range(0,len(tests)): # loop through tile tests
                                 ### print(i, j, config_populate)
-                                
+
                                 if(tests[k]=='U'):
                                     tile_test_result.append(tile_comparitor(config_populate[i][j],config_populate[i-1][j],'U'))
-                                
+
                                 elif(tests[k]=='R'):
                                     tile_test_result.append(tile_comparitor(config_populate[i][j],config_populate[i][j+1],'R'))
-                                    
+
                                 elif(tests[k]=='D'):
                                     tile_test_result.append(tile_comparitor(config_populate[i][j],config_populate[i+1][j],'D'))
-                                
+
                                 elif(tests[k]=='L'):
                                     tile_test_result.append(tile_comparitor(config_populate[i][j],config_populate[i][j-1],'L'))
-                                
+
                             try:
                                 if(tile_test_result.index(False) >= 0):
                                     tile_spin_test_result.append(False)
@@ -250,7 +250,7 @@ for z in range(0,len(matrix)):
 
                             # search for a False in the tile_test_result. No falses means the tile_rotation meets all tests
                             # need to error handle as index without a result throws a valueError.
-                            
+
                             # rotate the tile
                             config_populate[i][j] = tile_rotator(config_populate[i][j])
 
@@ -286,7 +286,7 @@ for z in range(0,len(matrix)):
             except ValueError:
                 print('CONFIG WORKS')
                 working_config.append([z,y,x])
-            
+
             config_counter += 1
 
 
