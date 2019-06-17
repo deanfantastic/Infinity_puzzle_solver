@@ -157,6 +157,7 @@ def tile_rotator(tile):
 # cycle through matrix for sames
 time_log = time.time()
 config_counter = 1
+display_interval = 100000
 working_config= []
 config_total = len(matrix)*len(tiles_same_order)*len(tiles_mixed_order)
 
@@ -165,14 +166,14 @@ config_total = len(matrix)*len(tiles_same_order)*len(tiles_mixed_order)
 for z in range(0,len(matrix)):
     for y in range(0,len(tiles_same_order)):
         for x in range(0,len(tiles_mixed_order)):
-            print('Config:', locale.format("%d", config_counter, grouping=True), '/', locale.format("%d", config_total, grouping=True), 'perms -', end = ' ')
-            
-            print(str(z)+'/'+str(len(matrix)),\
-                str(y)+'/'+str(len(tiles_same_order)),\
-                str(x)+'/'+str(len(tiles_mixed_order)),\
-                '|',\
-                len(working_config),'working solutions', end='')
-            #print(locale.format("%f", seconds_remaining, grouping=True), '% |', int(time.time() - time_log), ' seconds -', end=' ')
+            if(config_counter%display_interval==0):
+                print('Config:', locale.format_string("%d", config_counter, grouping=True), '/', locale.format("%d", config_total, grouping=True), 'perms -', end = ' ')
+                print(str(z)+'/'+str(len(matrix)),\
+                    str(y)+'/'+str(len(tiles_same_order)),\
+                    str(x)+'/'+str(len(tiles_mixed_order)),\
+                    '|',\
+                    len(working_config),'working solutions', end='')
+                #print(locale.format("%f", seconds_remaining, grouping=True), '% |', int(time.time() - time_log), ' seconds -', end=' ')
 
             if(Debug_puzzle==True):
                 print(' ')
@@ -280,7 +281,8 @@ for z in range(0,len(matrix)):
             try:
                 if(config_test_result.index(False) >= 0):
                     #print('Config doesnt work')
-                    print('...')
+                    if(config_counter%display_interval==0):
+                        print('...')
             except ValueError:
                 print('CONFIG WORKS')
                 working_config.append([z,y,x])
