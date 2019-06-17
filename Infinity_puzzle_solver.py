@@ -8,7 +8,6 @@ import time
 import itertools as iter
 import numpy as np
 import locale
-import sys
 
 locale.setlocale(locale.LC_ALL, 'en_US')
 ## Debug smaller puzzle set
@@ -160,7 +159,7 @@ time_log = time.time()
 config_counter = 1
 working_config= []
 config_total = len(matrix)*len(tiles_same_order)*len(tiles_mixed_order)
-seconds_remaining = 0
+
 
 
 for z in range(0,len(matrix)):
@@ -168,8 +167,12 @@ for z in range(0,len(matrix)):
         for x in range(0,len(tiles_mixed_order)):
             print('Config:', locale.format("%d", config_counter, grouping=True), '/', locale.format("%d", config_total, grouping=True), 'perms -', end = ' ')
             
-            seconds_remaining = 100*config_counter/config_total
-            print(locale.format("%f", seconds_remaining, grouping=True), '% |', int(time.time() - time_log), ' seconds -', end=' ')
+            print(str(z)+'/'+str(len(matrix)),\
+                str(y)+'/'+str(len(tiles_same_order)),\
+                str(x)+'/'+str(len(tiles_mixed_order)),\
+                '|',\
+                len(working_config),'working solutions', end='')
+            #print(locale.format("%f", seconds_remaining, grouping=True), '% |', int(time.time() - time_log), ' seconds -', end=' ')
 
             if(Debug_puzzle==True):
                 print(' ')
@@ -276,12 +279,14 @@ for z in range(0,len(matrix)):
             # Not preserving the rotation state of the tiles, just it's position.
             try:
                 if(config_test_result.index(False) >= 0):
-                    print('Config doesnt work')
+                    #print('Config doesnt work')
+                    print('...')
             except ValueError:
                 print('CONFIG WORKS')
                 working_config.append([z,y,x])
+            
             config_counter += 1
-            print(' ')
+
 
 for d in range(0,len(working_config)):
     print(working_config[d])
