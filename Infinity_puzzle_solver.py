@@ -176,7 +176,7 @@ def output_2d_array(display_2d_array):
 # cycle through matrix for sames
 time_log = time.time()
 config_counter = 0
-display_interval = 1
+display_interval = 10000
 config_test_result = []
 config_total = len(matrix)*len(tiles_same_order)*len(tiles_mixed_order)
 
@@ -202,10 +202,12 @@ for z in range(0,len(matrix)):
         for x in range(0,len(tiles_mixed_order)):
 
             if(config_counter%display_interval==0):
-                print('Config:', config_counter, '/', config_total, 'perms -', end = ' ')
+                print('Config:', f'{config_counter:,d}', '/', f'{config_total:,d}', 'perms -', end = ' ')
                 print(str(z+1)+'/'+str(len(matrix)),\
                     str(y+1)+'/'+str(len(tiles_same_order)),\
                     str(x+1)+'/'+str(len(tiles_mixed_order)), end=' - ')
+                
+                print('Solutions:', len(config_test_result))
             
             # populate the specific configuration for this matrix, sames_order and mixed_order
             config_populate= [[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]]
@@ -309,7 +311,6 @@ for z in range(0,len(matrix)):
             # If the mixed tests return all true in any rotation, the config has a workable solution.
             # Not preserving the rotation state of the tiles, just it's position.
             
-            print('Solutions:', len(config_test_result))
             config_counter += 1
                     
 
