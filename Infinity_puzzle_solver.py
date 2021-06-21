@@ -2,7 +2,44 @@
 # # Python 3.7
 #
 # Dean Crouch
+#
+# Place a tile in location X
+# Test it if it passed, add the next tile (0..14) available.
+# If tile fails, rotate and test again and if it passes, add the next tile.
+# If tile cant be rotated true, replace CURRENT tile with next highest tile
+# If no higher tile available, increment tile in location X-1
+"""
+1,2,3....11,12,13       <- 13 passes - available [14]           - next tile
+1,2,3....11,12,13,14    <- 14 fails  - available []             - increment prior
+1,2,3....11,12,14^^     <- 14 passed - available [13]           - next tile
+1,2,3....11,12,14,13    <- 13 fails  - available []             - increment prior - case where prior = 14
+1,2,3....11,12,14^^     <- cant increment 14 - available [13]   - increment prior
+1,2,3....11,13          <- 13 passes - available [12,14]        - next tile
+1,2,3....11,13,12       <- 12 passes - available [14]           - next tile
+1,2,3....11,13,12,14    <- 14 fails  - available []             - increment prior
+1,2,3....11,13,14       <- 14 fails  - available [12]           - increment prior
+1,2,3....11,14**        <- 14 passes - available [12,13]        - next tile
+1,2,3....11,14,12       <- 12 fails  - available [13]           - increment prior - case where prior = 14
+1,2,3....11,14**        <- cant increment 14 - avail. [12,13]   - increment prior
+1,2,3....12                          - available [11,13,14]
 
+Functions required:
+- next tile [extend sequence]
+- increment tile [current]
+- increment prior [location]
+
+Tile sequence
+0   tile_num    tile_orient
+1   tile_num    tile_orient
+2   tile_num    tile_orient
+
+Tile available
+0   tile_num
+1   tile_num
+2   tile_num
+This needs be ordered accending OR can I use pick min value?
+
+"""
 # import tools
 import time
 import itertools
@@ -14,14 +51,21 @@ locale.setlocale(locale.LC_ALL, 'en_US')
 ## Debug smaller puzzle set
 Debug_puzzle = True
 
+# Colors available
+# black 1
+# blue 2
+# purple 3
+# pink 4
+# green 5
+# yellow 6
+# orange 7
 
 # Set up arrangement of 15 tiles
+# 15! is 1.3 trillion combinations so tile arrangements need to be made on the fly
 tiles = np.array([
     ['black','black','pink','black'],\
- #   ['blue','blue','blue','blue'],\
- #   ['purple','purple','purple','purple'],\
-    ['banana','banana','banana','banana'],\
-    ['banana','banana','banana','banana'],\
+    ['blue','blue','blue','blue'],\
+    ['purple','purple','purple','purple'],\
     ['pink','pink','pink','pink'],\
     ['green','green','green','green'],\
     ['yellow','yellow','yellow','yellow'],\
@@ -55,7 +99,7 @@ def tile_rotator(tile, turns):
 
 
 # If DEBUG = true then print out the full range of 15 tiles in all 4 rotations
-if Debug_puzzle == True and False:
+if Debug_puzzle == True:
     for i in range(0,15):
         for j in range(0,4):
             print(i, ":", j, " - in:", list(tiles[i]), " out:", list(tile_rotator(tiles[i],j)))
@@ -69,11 +113,6 @@ time_log = time.time()
 config_counter = 0
 max_sequence_length = len(tiles)
 display_interval = 10000000
-
-#perm_range = ([1,2,3,4,5,6,7,8,9])
-#print("Combos: ", format(math.factorial(len(tiles)),',d'))
-
-
 
 
 # Define functions
